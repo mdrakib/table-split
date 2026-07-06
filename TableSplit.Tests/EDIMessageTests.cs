@@ -10,7 +10,7 @@ namespace TableSplit.Tests;
 /// EDIMessage is mapped to both the EDIMessage table (writes) and kvw_EDIMessage view (reads)
 /// via ToTable("EDIMessage").ToView("kvw_EDIMessage").
 ///
-/// Tests document which operations work and which fail under this mapping in EF Core 7.
+/// EF Core 10 fixes the ExecuteDelete/ExecuteUpdate routing natively — no visitor needed.
 /// </summary>
 public class EDIMessageTests : IDisposable
 {
@@ -25,9 +25,6 @@ public class EDIMessageTests : IDisposable
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseSqlite($"Data Source={_dbPath}")
-            .ReplaceService<
-                Microsoft.EntityFrameworkCore.Query.IQueryableMethodTranslatingExpressionVisitorFactory,
-                TableSplit.Data.ViewToTableRedirectVisitorFactory>()
             .LogTo(msg => _out.WriteLine(msg), LogLevel.Information)
             .EnableSensitiveDataLogging()
             .Options;
